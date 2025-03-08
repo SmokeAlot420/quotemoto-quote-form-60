@@ -137,25 +137,28 @@ const CoverageCard = ({ vehicle, coverage, updateCoverage }: CoverageCardProps) 
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor={`${vehicle.id}-deductible`}>Deductible Amount</Label>
-            <Select
-              value={coverage.deductible}
-              onValueChange={(value) => updateCoverage(vehicle.id, { deductible: value as DeductibleAmount })}
-            >
-              <SelectTrigger id={`${vehicle.id}-deductible`}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="$250">$250</SelectItem>
-                <SelectItem value="$500">$500</SelectItem>
-                <SelectItem value="$1,000">$1,000</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-gray-500">
-              A lower deductible means you'll pay less out of pocket in the event of a claim, but your premium may be higher.
-            </p>
-          </div>
+          {/* Only show deductible if coverage type is not "Minimum State Required" */}
+          {coverage.type !== "Minimum State Required" && (
+            <div className="space-y-2">
+              <Label htmlFor={`${vehicle.id}-deductible`}>Deductible Amount</Label>
+              <Select
+                value={coverage.deductible}
+                onValueChange={(value) => updateCoverage(vehicle.id, { deductible: value as DeductibleAmount })}
+              >
+                <SelectTrigger id={`${vehicle.id}-deductible`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="$250">$250</SelectItem>
+                  <SelectItem value="$500">$500</SelectItem>
+                  <SelectItem value="$1,000">$1,000</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-500">
+                A lower deductible means you'll pay less out of pocket in the event of a claim, but your premium may be higher.
+              </p>
+            </div>
+          )}
 
           <div className="md:col-span-2">
             <h4 className="font-medium mb-3">Additional Coverages</h4>

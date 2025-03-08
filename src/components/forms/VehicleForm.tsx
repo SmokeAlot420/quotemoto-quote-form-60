@@ -14,29 +14,123 @@ import { Label } from "@/components/ui/label";
 import { Car, Plus, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
-// Mock data - in a real app these would come from an API
-const YEARS = Array.from({ length: 35 }, (_, i) => (2024 - i).toString());
-const MAKES = ["Toyota", "Honda", "Ford", "Chevrolet", "Nissan", "BMW", "Mercedes-Benz", "Audi", "Kia", "Hyundai"];
+// Updated year range to include 2025
+const YEARS = Array.from({ length: 36 }, (_, i) => (2025 - i).toString());
+
+// Updated car makes list
+const MAKES = [
+  "ACURA", "ALFA ROMEO", "ASTON MARTIN", "AUDI", "BENTLEY", "BMW", "BUICK", 
+  "BYD", "CADILLAC", "CHEVROLET", "CHRYSLER", "DODGE", "FERRARI", "FIAT", 
+  "FORD", "GENESIS", "GMC", "HONDA", "HYUNDAI", "INFINITI", "JAGUAR", 
+  "JEEP", "KARMA", "KIA", "LAMBORGHINI", "LAND ROVER", "LEXUS", "LINCOLN", 
+  "LOTUS", "MASERATI", "MAZDA", "MCLAREN", "MERCEDES BENZ", "MINI", 
+  "MITSUBISHI", "NISSAN", "PORSCHE", "RAM", "ROLLS ROYCE", "SMART", 
+  "SUBARU", "TESLA", "TOYOTA"
+];
+
+// Expanded models by make
 const MODELS_BY_MAKE: Record<string, string[]> = {
-  Toyota: ["Corolla", "Camry", "RAV4", "Highlander", "Prius"],
-  Honda: ["Civic", "Accord", "CR-V", "Pilot", "Odyssey"],
-  Ford: ["F-150", "Escape", "Explorer", "Mustang", "Focus"],
-  Chevrolet: ["Silverado", "Equinox", "Malibu", "Tahoe", "Traverse"],
-  Nissan: ["Altima", "Sentra", "Rogue", "Pathfinder", "Murano"],
-  BMW: ["3 Series", "5 Series", "X3", "X5", "7 Series"],
-  "Mercedes-Benz": ["C-Class", "E-Class", "GLC", "GLE", "S-Class"],
-  Audi: ["A4", "A6", "Q5", "Q7", "A8"],
-  Kia: ["Forte", "Optima", "Sorento", "Sportage", "Telluride"],
-  Hyundai: ["Elantra", "Sonata", "Tucson", "Santa Fe", "Palisade"],
+  "ACURA": ["ILX", "MDX", "RDX", "RLX", "TLX", "NSX", "Integra"],
+  "ALFA ROMEO": ["Giulia", "Stelvio", "Tonale", "4C"],
+  "ASTON MARTIN": ["DB11", "DB12", "DBS", "Vantage", "DBX", "Valkyrie"],
+  "AUDI": ["A3", "A4", "A5", "A6", "A7", "A8", "Q3", "Q5", "Q7", "Q8", "e-tron", "TT", "R8"],
+  "BENTLEY": ["Bentayga", "Continental GT", "Flying Spur", "Mulliner"],
+  "BMW": ["2 Series", "3 Series", "4 Series", "5 Series", "7 Series", "8 Series", "X1", "X3", "X5", "X7", "iX", "i4", "i7", "Z4", "M2", "M3", "M4", "M5"],
+  "BUICK": ["Enclave", "Encore", "Envision", "LaCrosse", "Regal"],
+  "BYD": ["Atto 3", "Han", "Tang", "Seal", "Dolphin"],
+  "CADILLAC": ["CT4", "CT5", "Escalade", "XT4", "XT5", "XT6", "LYRIQ", "CELESTIQ"],
+  "CHEVROLET": ["Blazer", "Bolt", "Camaro", "Colorado", "Corvette", "Equinox", "Malibu", "Silverado", "Suburban", "Tahoe", "Trailblazer", "Traverse"],
+  "CHRYSLER": ["300", "Pacifica", "Voyager"],
+  "DODGE": ["Challenger", "Charger", "Durango", "Hornet"],
+  "FERRARI": ["296", "SF90", "F8", "Roma", "Portofino", "812", "Purosangue"],
+  "FIAT": ["500", "500X"],
+  "FORD": ["Bronco", "EcoSport", "Edge", "Escape", "Expedition", "Explorer", "F-150", "F-250", "Maverick", "Mustang", "Mustang Mach-E", "Ranger", "Transit"],
+  "GENESIS": ["G70", "G80", "G90", "GV60", "GV70", "GV80"],
+  "GMC": ["Acadia", "Canyon", "Hummer EV", "Sierra", "Terrain", "Yukon"],
+  "HONDA": ["Accord", "Civic", "CR-V", "HR-V", "Insight", "Odyssey", "Passport", "Pilot", "Ridgeline"],
+  "HYUNDAI": ["Elantra", "Ioniq", "Ioniq 5", "Ioniq 6", "Kona", "Palisade", "Santa Cruz", "Santa Fe", "Sonata", "Tucson", "Venue"],
+  "INFINITI": ["Q50", "Q60", "QX50", "QX55", "QX60", "QX80"],
+  "JAGUAR": ["E-PACE", "F-PACE", "F-TYPE", "I-PACE", "XE", "XF"],
+  "JEEP": ["Cherokee", "Compass", "Gladiator", "Grand Cherokee", "Renegade", "Wagoneer", "Wrangler"],
+  "KARMA": ["GS-6", "Revero", "GSe-6"],
+  "KIA": ["Carnival", "EV6", "Forte", "K5", "Niro", "Rio", "Seltos", "Sorento", "Soul", "Sportage", "Stinger", "Telluride"],
+  "LAMBORGHINI": ["Aventador", "Huracan", "Urus", "Revuelto"],
+  "LAND ROVER": ["Defender", "Discovery", "Range Rover", "Range Rover Evoque", "Range Rover Sport", "Range Rover Velar"],
+  "LEXUS": ["ES", "GX", "IS", "LC", "LS", "LX", "NX", "RX", "UX", "RZ"],
+  "LINCOLN": ["Aviator", "Corsair", "Nautilus", "Navigator"],
+  "LOTUS": ["Emira", "Evija", "Eletre"],
+  "MASERATI": ["Ghibli", "Grecale", "Levante", "MC20", "Quattroporte"],
+  "MAZDA": ["CX-30", "CX-5", "CX-9", "CX-50", "CX-90", "Mazda3", "Mazda6", "MX-5 Miata"],
+  "MCLAREN": ["Artura", "720S", "765LT", "GT"],
+  "MERCEDES BENZ": ["A-Class", "C-Class", "E-Class", "S-Class", "CLA", "CLS", "GLA", "GLB", "GLC", "GLE", "GLS", "EQE", "EQS", "G-Class", "AMG GT"],
+  "MINI": ["Cooper", "Clubman", "Countryman", "Convertible", "Electric"],
+  "MITSUBISHI": ["Eclipse Cross", "Mirage", "Outlander", "Outlander Sport"],
+  "NISSAN": ["Altima", "Armada", "Frontier", "Kicks", "Leaf", "Maxima", "Murano", "Pathfinder", "Rogue", "Sentra", "Titan", "Versa"],
+  "PORSCHE": ["911", "718 Boxster", "718 Cayman", "Cayenne", "Macan", "Panamera", "Taycan"],
+  "RAM": ["1500", "2500", "3500", "ProMaster"],
+  "ROLLS ROYCE": ["Cullinan", "Dawn", "Ghost", "Phantom", "Spectre", "Wraith"],
+  "SMART": ["EQ fortwo"],
+  "SUBARU": ["Ascent", "BRZ", "Crosstrek", "Forester", "Impreza", "Legacy", "Outback", "Solterra", "WRX"],
+  "TESLA": ["Model 3", "Model S", "Model X", "Model Y", "Cybertruck"],
+  "TOYOTA": ["4Runner", "86", "Avalon", "bZ4X", "Camry", "Corolla", "Highlander", "Land Cruiser", "Mirai", "Prius", "RAV4", "Sequoia", "Sienna", "Supra", "Tacoma", "Tundra", "Venza"]
 };
 
+// Extended trims by model
 const TRIMS_BY_MODEL: Record<string, string[]> = {
-  Corolla: ["L", "LE", "SE", "XLE", "XSE"],
-  Camry: ["L", "LE", "SE", "XLE", "XSE"],
-  Civic: ["LX", "Sport", "EX", "Touring"],
-  Accord: ["LX", "Sport", "EX", "Touring"],
-  Mustang: ["EcoBoost", "GT", "Mach 1", "Shelby GT500"],
-  // More trims can be added here
+  // Acura
+  "MDX": ["Base", "Technology", "A-Spec", "Advance", "Type S"],
+  "RDX": ["Base", "Technology", "A-Spec", "Advance"],
+  
+  // Audi
+  "A4": ["Premium", "Premium Plus", "Prestige", "S4"],
+  "Q5": ["Premium", "Premium Plus", "Prestige", "SQ5"],
+  
+  // BMW
+  "3 Series": ["330i", "330e", "M340i", "M3"],
+  "X5": ["sDrive40i", "xDrive40i", "xDrive45e", "M50i", "X5M"],
+  
+  // Chevrolet
+  "Silverado": ["WT", "Custom", "LT", "RST", "LTZ", "High Country", "ZR2"],
+  "Equinox": ["LS", "LT", "RS", "Premier"],
+  "Corvette": ["Stingray", "Z06", "Grand Sport", "ZR1"],
+  
+  // Ford
+  "F-150": ["XL", "XLT", "Lariat", "King Ranch", "Platinum", "Limited", "Raptor", "Tremor"],
+  "Mustang": ["EcoBoost", "GT", "Mach 1", "Shelby GT500", "Dark Horse"],
+  "Bronco": ["Base", "Big Bend", "Black Diamond", "Outer Banks", "Badlands", "Wildtrak", "Everglades", "Raptor"],
+  
+  // Honda
+  "Accord": ["LX", "Sport", "Sport SE", "EX-L", "Sport 2.0T", "Touring", "Hybrid"],
+  "Civic": ["LX", "Sport", "EX", "Touring", "Si", "Type R"],
+  "CR-V": ["LX", "EX", "EX-L", "Sport", "Sport Touring", "Hybrid"],
+  
+  // Jeep
+  "Wrangler": ["Sport", "Sport S", "Sahara", "Rubicon", "Rubicon 392", "4xe"],
+  "Grand Cherokee": ["Laredo", "Limited", "Trailhawk", "Overland", "Summit", "SRT", "Trackhawk"],
+  
+  // Lexus
+  "RX": ["RX 350", "RX 350 F Sport", "RX 350L", "RX 450h", "RX 450h F Sport", "RX 500h"],
+  "ES": ["ES 250", "ES 350", "ES 300h", "F Sport"],
+  
+  // Mercedes-Benz
+  "C-Class": ["C 300", "C 300 4MATIC", "AMG C 43", "AMG C 63", "AMG C 63 S"],
+  "E-Class": ["E 350", "E 450", "AMG E 53", "AMG E 63 S"],
+  
+  // Tesla
+  "Model 3": ["Standard Range", "Long Range", "Performance"],
+  "Model Y": ["Long Range", "Performance"],
+  
+  // Toyota
+  "Camry": ["LE", "SE", "XLE", "XSE", "TRD", "Hybrid LE", "Hybrid SE", "Hybrid XLE"],
+  "RAV4": ["LE", "XLE", "XLE Premium", "Adventure", "TRD Off-Road", "Limited", "Hybrid LE", "Hybrid XLE", "Hybrid XSE", "Hybrid Limited", "Prime SE", "Prime XSE"],
+  "Tacoma": ["SR", "SR5", "TRD Sport", "TRD Off-Road", "Limited", "TRD Pro"],
+  "Tundra": ["SR", "SR5", "Limited", "Platinum", "1794 Edition", "TRD Pro", "Capstone"],
+  
+  // Subaru
+  "Outback": ["Base", "Premium", "Onyx Edition", "Limited", "Touring", "Wilderness"],
+  "Forester": ["Base", "Premium", "Sport", "Limited", "Touring", "Wilderness"],
+  
+  // Many more trims can be added for other models
 };
 
 const VehicleForm = () => {
