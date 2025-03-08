@@ -1,3 +1,4 @@
+
 import { useQuoteForm, Vehicle, VehicleUsage } from "@/context/QuoteFormContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -344,4 +345,196 @@ const VehicleForm = () => {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <Car className="mr-2 text-insurance-primary" />
-                <h3 className="text-lg font-medium">Vehicle {index
+                <h3 className="text-lg font-medium">Vehicle {index + 1}</h3>
+              </div>
+              {vehicles.length > 1 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removeVehicle(vehicle.id)}
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Remove
+                </Button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Year Selection */}
+              <div className="form-group">
+                <Label htmlFor={`${vehicle.id}-year`} className="mb-1 block">
+                  Year <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={vehicle.year}
+                  onValueChange={(value) => updateVehicle(vehicle.id, { year: value })}
+                >
+                  <SelectTrigger id={`${vehicle.id}-year`} className={errors[`${vehicle.id}-year`] ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {YEARS.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors[`${vehicle.id}-year`] && (
+                  <p className="text-red-500 text-sm mt-1">{errors[`${vehicle.id}-year`]}</p>
+                )}
+              </div>
+
+              {/* Make Selection */}
+              <div className="form-group">
+                <Label htmlFor={`${vehicle.id}-make`} className="mb-1 block">
+                  Make <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={vehicle.make}
+                  onValueChange={(value) => {
+                    updateVehicle(vehicle.id, { make: value, model: "", trim: "" });
+                  }}
+                >
+                  <SelectTrigger id={`${vehicle.id}-make`} className={errors[`${vehicle.id}-make`] ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Select make" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MAKES.map((make) => (
+                      <SelectItem key={make} value={make}>
+                        {make}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors[`${vehicle.id}-make`] && (
+                  <p className="text-red-500 text-sm mt-1">{errors[`${vehicle.id}-make`]}</p>
+                )}
+              </div>
+
+              {/* Model Selection */}
+              <div className="form-group">
+                <Label htmlFor={`${vehicle.id}-model`} className="mb-1 block">
+                  Model <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={vehicle.model}
+                  onValueChange={(value) => {
+                    updateVehicle(vehicle.id, { model: value, trim: "" });
+                    setCustomTrim(prev => ({ ...prev, [vehicle.id]: "" }));
+                  }}
+                  disabled={!vehicle.make}
+                >
+                  <SelectTrigger id={`${vehicle.id}-model`} className={errors[`${vehicle.id}-model`] ? "border-red-500" : ""}>
+                    <SelectValue placeholder={vehicle.make ? "Select model" : "Select make first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getModelsForMake(vehicle.make).map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors[`${vehicle.id}-model`] && (
+                  <p className="text-red-500 text-sm mt-1">{errors[`${vehicle.id}-model`]}</p>
+                )}
+              </div>
+
+              {/* Trim Selection */}
+              <div className="form-group">
+                <Label htmlFor={`${vehicle.id}-trim`} className="mb-1 block">
+                  Trim (Optional)
+                </Label>
+                <Select
+                  value={vehicle.trim || ""}
+                  onValueChange={(value) => {
+                    if (value === "Trim not listed") {
+                      // Clear the trim field to use custom input
+                      updateVehicle(vehicle.id, { trim: "" });
+                      setCustomTrim(prev => ({ ...prev, [vehicle.id]: "" }));
+                    } else {
+                      updateVehicle(vehicle.id, { trim: value });
+                      setCustomTrim(prev => ({ ...prev, [vehicle.id]: "" }));
+                    }
+                  }}
+                  disabled={!vehicle.model}
+                >
+                  <SelectTrigger id={`${vehicle.id}-trim`}>
+                    <SelectValue placeholder={vehicle.model ? "Select trim (optional)" : "Select model first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getTrimsForModel(vehicle.model).map((trim) => (
+                      <SelectItem key={trim} value={trim}>
+                        {trim}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                {/* Custom trim input field that appears when "Trim not listed" is selected */}
+                {vehicle.trim === "Trim not listed" && (
+                  <div className="mt-2">
+                    <Input
+                      id={`${vehicle.id}-custom-trim`}
+                      placeholder="Enter your trim"
+                      value={customTrim[vehicle.id] || ""}
+                      onChange={(e) => handleCustomTrimChange(vehicle.id, e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Vehicle Usage */}
+              <div className="form-group md:col-span-2">
+                <Label htmlFor={`${vehicle.id}-usage`} className="mb-1 block">
+                  Vehicle Usage <span className="text-red-500">*</span>
+                </Label>
+                <div className="flex items-center">
+                  <Select
+                    value={vehicle.usage}
+                    onValueChange={(value) => updateVehicle(vehicle.id, { usage: value as VehicleUsage })}
+                  >
+                    <SelectTrigger id={`${vehicle.id}-usage`}>
+                      <SelectValue placeholder="Select usage" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Personal">Personal</SelectItem>
+                      <SelectItem value="Business">Business</SelectItem>
+                      <SelectItem value="Rideshare">Rideshare (Uber, Lyft, etc.)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="ml-2">
+                    <HelpCircle className="h-5 w-5 text-insurance-text-light cursor-help" title="How you primarily use this vehicle will affect your quote." />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+
+      <div className="flex justify-between mt-6">
+        <Button
+          type="button"
+          variant="outline"
+          className="text-insurance-text border-insurance-accent hover:bg-insurance-accent/10"
+          onClick={() => addVehicle()}
+        >
+          <Plus className="mr-1 h-4 w-4" />
+          Add Another Vehicle
+        </Button>
+        <Button 
+          type="button"
+          className="bg-insurance-primary hover:bg-insurance-primary/90"
+          onClick={handleNext}
+        >
+          Continue
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default VehicleForm;
