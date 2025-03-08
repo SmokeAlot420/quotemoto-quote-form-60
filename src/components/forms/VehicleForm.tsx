@@ -396,6 +396,7 @@ const VehicleForm = () => {
   const { vehicles } = formData;
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [customTrim, setCustomTrim] = useState<Record<string, string>>({});
+  const [showCustomTrimInput, setShowCustomTrimInput] = useState<Record<string, boolean>>({});
 
   const validateVehicles = () => {
     const newErrors: Record<string, string> = {};
@@ -440,9 +441,20 @@ const VehicleForm = () => {
     return modelTrims;
   };
 
+  const handleTrimChange = (vehicleId: string, value: string) => {
+    if (value === "Trim not listed") {
+      setShowCustomTrimInput(prev => ({...prev, [vehicleId]: true}));
+      updateVehicle(vehicleId, { trim: "Trim not listed" });
+    } else {
+      setShowCustomTrimInput(prev => ({...prev, [vehicleId]: false}));
+      updateVehicle(vehicleId, { trim: value });
+      setCustomTrim(prev => ({...prev, [vehicleId]: ""}));
+    }
+  };
+
   const handleCustomTrimChange = (vehicleId: string, value: string) => {
     setCustomTrim(prev => ({...prev, [vehicleId]: value}));
-    updateVehicle(vehicleId, { trim: value });
+    updateVehicle(vehicleId, { trim: value === "" ? "Trim not listed" : value });
   };
 
   return (
@@ -506,6 +518,7 @@ const VehicleForm = () => {
                   value={vehicle.make}
                   onValueChange={(value) => {
                     updateVehicle(vehicle.id, { make: value, model: "", trim: "" });
+                    setShowCustomTrimInput(prev => ({...prev, [vehicle.id]: false}));
                   }}
                 >
                   <SelectTrigger id={`${vehicle.id}-make`} className={errors[`${vehicle.id}-make`] ? "border-red-500" : ""}>
@@ -533,6 +546,7 @@ const VehicleForm = () => {
                   onValueChange={(value) => {
                     updateVehicle(vehicle.id, { model: value, trim: "" });
                     setCustomTrim(prev => ({ ...prev, [vehicle.id]: "" }));
+                    setShowCustomTrimInput(prev => ({...prev, [vehicle.id]: false}));
                   }}
                   disabled={!vehicle.make}
                 >
@@ -558,15 +572,7 @@ const VehicleForm = () => {
                 </Label>
                 <Select
                   value={vehicle.trim || ""}
-                  onValueChange={(value) => {
-                    if (value === "Trim not listed") {
-                      updateVehicle(vehicle.id, { trim: "" });
-                      setCustomTrim(prev => ({ ...prev, [vehicle.id]: "" }));
-                    } else {
-                      updateVehicle(vehicle.id, { trim: value });
-                      setCustomTrim(prev => ({ ...prev, [vehicle.id]: "" }));
-                    }
-                  }}
+                  onValueChange={(value) => handleTrimChange(vehicle.id, value)}
                   disabled={!vehicle.model}
                 >
                   <SelectTrigger id={`${vehicle.id}-trim`}>
@@ -581,7 +587,7 @@ const VehicleForm = () => {
                   </SelectContent>
                 </Select>
                 
-                {vehicle.trim === "Trim not listed" && (
+                {(showCustomTrimInput[vehicle.id] || vehicle.trim === "Trim not listed") && (
                   <div className="mt-2">
                     <Input
                       id={`${vehicle.id}-custom-trim`}
