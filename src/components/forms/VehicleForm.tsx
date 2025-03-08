@@ -1,4 +1,3 @@
-
 import { useQuoteForm, Vehicle, VehicleUsage } from "@/context/QuoteFormContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -75,62 +74,99 @@ const MODELS_BY_MAKE: Record<string, string[]> = {
   "TOYOTA": ["4Runner", "86", "Avalon", "bZ4X", "Camry", "Corolla", "Highlander", "Land Cruiser", "Mirai", "Prius", "RAV4", "Sequoia", "Sienna", "Supra", "Tacoma", "Tundra", "Venza"]
 };
 
-// Extended trims by model
+// Extended trims by model with more comprehensive options
 const TRIMS_BY_MODEL: Record<string, string[]> = {
   // Acura
-  "MDX": ["Base", "Technology", "A-Spec", "Advance", "Type S"],
-  "RDX": ["Base", "Technology", "A-Spec", "Advance"],
+  "MDX": ["Base", "Technology", "A-Spec", "Advance", "Type S", "Type S Advance"],
+  "RDX": ["Base", "Technology", "A-Spec", "Advance", "PMC Edition"],
+  "TLX": ["Base", "Technology", "A-Spec", "Advance", "Type S", "Type S Performance"],
+  "Integra": ["Base", "A-Spec", "A-Spec Technology", "Type S"],
   
   // Audi
-  "A4": ["Premium", "Premium Plus", "Prestige", "S4"],
-  "Q5": ["Premium", "Premium Plus", "Prestige", "SQ5"],
+  "A4": ["Premium", "Premium Plus", "Prestige", "S4 Premium Plus", "S4 Prestige", "RS4"],
+  "Q5": ["Premium", "Premium Plus", "Prestige", "SQ5 Premium Plus", "SQ5 Prestige", "Q5 Sportback", "SQ5 Sportback"],
+  "A6": ["Premium", "Premium Plus", "Prestige", "S6 Premium Plus", "S6 Prestige", "RS6 Avant"],
+  "Q7": ["Premium", "Premium Plus", "Prestige", "SQ7 Premium Plus", "SQ7 Prestige"],
+  "e-tron": ["Premium", "Premium Plus", "Prestige", "S", "GT", "RS GT"],
   
   // BMW
-  "3 Series": ["330i", "330e", "M340i", "M3"],
-  "X5": ["sDrive40i", "xDrive40i", "xDrive45e", "M50i", "X5M"],
+  "3 Series": ["330i", "330i xDrive", "330e", "330e xDrive", "M340i", "M340i xDrive", "M3", "M3 Competition", "M3 CS"],
+  "5 Series": ["530i", "530i xDrive", "540i", "540i xDrive", "550i", "550i xDrive", "M5", "M5 Competition", "M5 CS"],
+  "X5": ["sDrive40i", "xDrive40i", "xDrive45e", "M50i", "X5 M", "X5 M Competition", "X5 M First Edition"],
+  "7 Series": ["740i", "740i xDrive", "760i xDrive", "i7 eDrive50", "i7 xDrive60", "i7 M70"],
+  "i4": ["eDrive35", "eDrive40", "xDrive40", "M50"],
+  "iX": ["xDrive40", "xDrive50", "M60"],
   
   // Chevrolet
-  "Silverado": ["WT", "Custom", "LT", "RST", "LTZ", "High Country", "ZR2"],
-  "Equinox": ["LS", "LT", "RS", "Premier"],
-  "Corvette": ["Stingray", "Z06", "Grand Sport", "ZR1"],
+  "Silverado": ["WT", "Custom", "Custom Trail Boss", "LT", "RST", "LT Trail Boss", "LTZ", "High Country", "ZR2", "ZR2 Bison"],
+  "Equinox": ["LS", "LT", "RS", "Premier", "LT EV", "RS EV", "Premier EV"],
+  "Corvette": ["Stingray 1LT", "Stingray 2LT", "Stingray 3LT", "Z06 1LZ", "Z06 2LZ", "Z06 3LZ", "Grand Sport", "ZR1", "E-Ray"],
+  "Tahoe": ["LS", "LT", "RST", "Z71", "Premier", "High Country"],
+  "Blazer": ["LT", "RS", "Premier", "SS", "EV LT", "EV RS", "EV SS"],
   
   // Ford
-  "F-150": ["XL", "XLT", "Lariat", "King Ranch", "Platinum", "Limited", "Raptor", "Tremor"],
-  "Mustang": ["EcoBoost", "GT", "Mach 1", "Shelby GT500", "Dark Horse"],
-  "Bronco": ["Base", "Big Bend", "Black Diamond", "Outer Banks", "Badlands", "Wildtrak", "Everglades", "Raptor"],
+  "F-150": ["XL", "XLT", "Lariat", "King Ranch", "Platinum", "Limited", "Tremor", "Raptor", "Raptor R", "Lightning Pro", "Lightning XLT", "Lightning Lariat", "Lightning Platinum"],
+  "Mustang": ["EcoBoost", "EcoBoost Premium", "GT", "GT Premium", "Mach 1", "Mach 1 Premium", "Shelby GT500", "Dark Horse", "Dark Horse Premium"],
+  "Bronco": ["Base", "Big Bend", "Black Diamond", "Outer Banks", "Badlands", "Wildtrak", "Everglades", "Raptor", "Heritage Edition", "Heritage Limited Edition"],
+  "Explorer": ["Base", "XLT", "ST-Line", "Limited", "Timberline", "ST", "King Ranch", "Platinum"],
+  "Maverick": ["XL", "XLT", "Lariat", "Tremor", "Hybrid", "EcoBoost"],
   
   // Honda
-  "Accord": ["LX", "Sport", "Sport SE", "EX-L", "Sport 2.0T", "Touring", "Hybrid"],
-  "Civic": ["LX", "Sport", "EX", "Touring", "Si", "Type R"],
-  "CR-V": ["LX", "EX", "EX-L", "Sport", "Sport Touring", "Hybrid"],
+  "Accord": ["LX", "Sport", "Sport SE", "EX-L", "Sport 2.0T", "Touring", "Hybrid Sport", "Hybrid EX-L", "Hybrid Touring"],
+  "Civic": ["LX", "Sport", "EX", "EX-L", "Touring", "Si", "Type R", "Type R Limited Edition", "Type R Touring"],
+  "CR-V": ["LX", "EX", "EX-L", "Sport", "Sport Touring", "Hybrid EX", "Hybrid EX-L", "Hybrid Sport", "Hybrid Sport Touring"],
+  "Pilot": ["LX", "Sport", "EX-L", "TrailSport", "Touring", "Elite", "Black Edition"],
+  "HR-V": ["LX", "Sport", "EX", "EX-L"],
   
   // Jeep
-  "Wrangler": ["Sport", "Sport S", "Sahara", "Rubicon", "Rubicon 392", "4xe"],
-  "Grand Cherokee": ["Laredo", "Limited", "Trailhawk", "Overland", "Summit", "SRT", "Trackhawk"],
+  "Wrangler": ["Sport", "Sport S", "Willys Sport", "Willys", "Sahara", "Rubicon", "Rubicon 392", "4xe Sahara", "4xe Rubicon", "High Altitude", "Freedom Edition"],
+  "Grand Cherokee": ["Laredo", "Altitude", "Limited", "Trailhawk", "Overland", "Summit", "Summit Reserve", "SRT", "Trackhawk", "4xe Limited", "4xe Trailhawk", "4xe Overland", "4xe Summit", "4xe Summit Reserve"],
+  "Gladiator": ["Sport", "Willys Sport", "Sport S", "Willys", "Mojave", "Rubicon", "High Altitude", "Farout", "Rubicon X"],
+  "Cherokee": ["Latitude", "Latitude Plus", "Latitude Lux", "Trailhawk", "Limited", "High Altitude"],
+  "Compass": ["Sport", "Latitude", "Latitude Lux", "Trailhawk", "Limited", "High Altitude"],
   
   // Lexus
-  "RX": ["RX 350", "RX 350 F Sport", "RX 350L", "RX 450h", "RX 450h F Sport", "RX 500h"],
-  "ES": ["ES 250", "ES 350", "ES 300h", "F Sport"],
+  "RX": ["RX 350", "RX 350 F Sport", "RX 350L", "RX 450h", "RX 450h F Sport", "RX 500h", "RX 450h+", "RX 350h", "RX 350 F Sport Handling"],
+  "ES": ["ES 250", "ES 250 F Sport", "ES 350", "ES 350 F Sport", "ES 300h", "ES 300h F Sport", "ES 300h Luxury", "ES 300h Ultra Luxury"],
+  "NX": ["NX 250", "NX 350", "NX 350h", "NX 450h+", "NX 350 F Sport", "NX 450h+ F Sport"],
+  "LS": ["LS 500", "LS 500 F Sport", "LS 500h", "LS 500h F Sport"],
+  "LX": ["LX 600", "LX 600 Premium", "LX 600 F Sport", "LX 600 Luxury", "LX 600 Ultra Luxury"],
   
   // Mercedes-Benz
-  "C-Class": ["C 300", "C 300 4MATIC", "AMG C 43", "AMG C 63", "AMG C 63 S"],
-  "E-Class": ["E 350", "E 450", "AMG E 53", "AMG E 63 S"],
+  "C-Class": ["C 300", "C 300 4MATIC", "AMG C 43", "AMG C 63", "AMG C 63 S", "C 300e", "C 350e"],
+  "E-Class": ["E 350", "E 350 4MATIC", "E 450", "E 450 4MATIC", "AMG E 53", "AMG E 63 S", "E 350e", "E 450e"],
+  "S-Class": ["S 500", "S 500 4MATIC", "S 580", "S 580 4MATIC", "AMG S 63", "Maybach S 580", "Maybach S 680"],
+  "GLE": ["GLE 350", "GLE 350 4MATIC", "GLE 450 4MATIC", "GLE 580 4MATIC", "AMG GLE 53", "AMG GLE 63 S", "GLE 350e", "GLE 400e"],
+  "EQS": ["EQS 450+", "EQS 580 4MATIC", "AMG EQS 53", "EQS SUV 450+", "EQS SUV 580 4MATIC"],
   
   // Tesla
-  "Model 3": ["Standard Range", "Long Range", "Performance"],
-  "Model Y": ["Long Range", "Performance"],
+  "Model 3": ["Standard Range", "Long Range", "Performance", "RWD", "AWD", "Long Range AWD"],
+  "Model Y": ["RWD", "Long Range", "Performance", "Long Range AWD"],
+  "Model S": ["Standard Range", "Long Range", "Plaid", "Plaid+"],
+  "Model X": ["Long Range", "Plaid"],
+  "Cybertruck": ["RWD", "Dual Motor AWD", "Tri Motor AWD", "Cyberbeast"],
   
   // Toyota
-  "Camry": ["LE", "SE", "XLE", "XSE", "TRD", "Hybrid LE", "Hybrid SE", "Hybrid XLE"],
-  "RAV4": ["LE", "XLE", "XLE Premium", "Adventure", "TRD Off-Road", "Limited", "Hybrid LE", "Hybrid XLE", "Hybrid XSE", "Hybrid Limited", "Prime SE", "Prime XSE"],
-  "Tacoma": ["SR", "SR5", "TRD Sport", "TRD Off-Road", "Limited", "TRD Pro"],
-  "Tundra": ["SR", "SR5", "Limited", "Platinum", "1794 Edition", "TRD Pro", "Capstone"],
+  "Camry": ["LE", "SE", "SE Nightshade", "XLE", "XSE", "TRD", "Hybrid LE", "Hybrid SE", "Hybrid SE Nightshade", "Hybrid XLE", "Hybrid XSE"],
+  "RAV4": ["LE", "XLE", "XLE Premium", "Adventure", "TRD Off-Road", "Limited", "Hybrid LE", "Hybrid XLE", "Hybrid XLE Premium", "Hybrid XSE", "Hybrid Limited", "Prime SE", "Prime XSE", "Prime XSE Premium"],
+  "Tacoma": ["SR", "SR5", "TRD Sport", "TRD Off-Road", "Limited", "TRD Pro", "Trail Edition", "PreRunner", "SR5 V6", "TRD Sport V6", "TRD Off-Road V6", "Limited V6", "TrailHunter"],
+  "Tundra": ["SR", "SR5", "Limited", "Platinum", "1794 Edition", "TRD Pro", "Capstone", "SR5 TRD Sport", "SR5 TRD Off-Road", "Limited TRD Off-Road", "Hybrid Limited", "Hybrid Platinum", "Hybrid TRD Pro", "Hybrid Capstone"],
+  "Prius": ["LE", "XLE", "Limited", "Nightshade Edition", "Prime LE", "Prime XLE", "Prime Limited"],
+  "4Runner": ["SR5", "SR5 Premium", "TRD Sport", "TRD Off-Road", "TRD Off-Road Premium", "Limited", "TRD Pro", "40th Anniversary Special Edition"],
   
   // Subaru
-  "Outback": ["Base", "Premium", "Onyx Edition", "Limited", "Touring", "Wilderness"],
-  "Forester": ["Base", "Premium", "Sport", "Limited", "Touring", "Wilderness"],
+  "Outback": ["Base", "Premium", "Onyx Edition", "Onyx Edition XT", "Limited", "Touring", "Wilderness", "Limited XT", "Touring XT"],
+  "Forester": ["Base", "Premium", "Sport", "Limited", "Touring", "Wilderness", "Wilderness Touring"],
+  "Crosstrek": ["Base", "Premium", "Sport", "Limited", "Hybrid", "Wilderness", "Special Edition"],
+  "WRX": ["Base", "Premium", "Limited", "GT", "STI", "STI Limited", "STI Series.White"],
+  "BRZ": ["Premium", "Limited", "tS", "Series.Yellow", "Series.Gray", "Series.White"],
   
-  // Many more trims can be added for other models
+  // Nissan
+  "Altima": ["S", "SV", "SR", "SL", "SR VC-Turbo", "Platinum", "Edition ONE"],
+  "Rogue": ["S", "SV", "SL", "Platinum", "Hybrid SV", "Hybrid SL", "Hybrid Platinum"],
+  "Pathfinder": ["S", "SV", "SL", "Platinum", "Rock Creek", "Rock Creek SV", "Rock Creek SL"],
+  "Frontier": ["S", "SV", "PRO-X", "PRO-4X", "SL", "Midnight Edition", "Desert Runner"],
+  "Z": ["Sport", "Performance", "NISMO", "Proto Spec", "Type T", "Type S"]
 };
 
 const VehicleForm = () => {
