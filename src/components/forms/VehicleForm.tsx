@@ -431,7 +431,13 @@ const VehicleForm = () => {
   };
 
   const getTrimsForModel = (model: string) => {
-    return model ? TRIMS_BY_MODEL[model] || [] : [];
+    const modelTrims = model ? TRIMS_BY_MODEL[model] || [] : [];
+    
+    if (modelTrims.length === 0 || !modelTrims.includes("Trim not listed")) {
+      return [...modelTrims, "Trim not listed"];
+    }
+    
+    return modelTrims;
   };
 
   const handleCustomTrimChange = (vehicleId: string, value: string) => {
