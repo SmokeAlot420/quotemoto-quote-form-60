@@ -1,4 +1,3 @@
-
 import { useQuoteForm, Vehicle, VehicleUsage } from "@/context/QuoteFormContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,112 +13,232 @@ import { Label } from "@/components/ui/label";
 import { Car, Plus, Trash2, HelpCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 
-// Updated year range to include 2025
 const YEARS = Array.from({ length: 36 }, (_, i) => (2025 - i).toString());
 
-// Updated car makes list
 const MAKES = [
   "ACURA", "ALFA ROMEO", "ASTON MARTIN", "AUDI", "BENTLEY", "BMW", "BUICK", 
   "BYD", "CADILLAC", "CHEVROLET", "CHRYSLER", "DODGE", "FERRARI", "FIAT", 
   "FORD", "GENESIS", "GMC", "HONDA", "HYUNDAI", "INFINITI", "JAGUAR", 
   "JEEP", "KARMA", "KIA", "LAMBORGHINI", "LAND ROVER", "LEXUS", "LINCOLN", 
-  "LOTUS", "MASERATI", "MAZDA", "MCLAREN", "MERCEDES BENZ", "MINI", 
-  "MITSUBISHI", "NISSAN", "PORSCHE", "RAM", "ROLLS ROYCE", "SMART", 
-  "SUBARU", "TESLA", "TOYOTA"
+  "LOTUS", "LUCID", "MASERATI", "MAZDA", "MCLAREN", "MERCEDES BENZ", "MINI", 
+  "MITSUBISHI", "NISSAN", "POLESTAR", "PORSCHE", "RAM", "RIVIAN", "ROLLS ROYCE", 
+  "SUBARU", "TESLA", "TOYOTA", "VOLKSWAGEN", "VOLVO"
 ];
 
-// Expanded models by make
 const MODELS_BY_MAKE: Record<string, string[]> = {
-  "ACURA": ["ILX", "MDX", "RDX", "RLX", "TLX", "NSX", "Integra"],
-  "ALFA ROMEO": ["Giulia", "Stelvio", "Tonale", "4C"],
-  "ASTON MARTIN": ["DB11", "DB12", "DBS", "Vantage", "DBX", "Valkyrie"],
-  "AUDI": ["A3", "A4", "A5", "A6", "A7", "A8", "Q3", "Q5", "Q7", "Q8", "e-tron", "TT", "R8"],
-  "BENTLEY": ["Bentayga", "Continental GT", "Flying Spur", "Mulliner"],
-  "BMW": ["2 Series", "3 Series", "4 Series", "5 Series", "7 Series", "8 Series", "X1", "X3", "X5", "X7", "iX", "i4", "i7", "Z4", "M2", "M3", "M4", "M5"],
-  "BUICK": ["Enclave", "Encore", "Envision", "LaCrosse", "Regal"],
-  "BYD": ["Atto 3", "Han", "Tang", "Seal", "Dolphin"],
-  "CADILLAC": ["CT4", "CT5", "Escalade", "XT4", "XT5", "XT6", "LYRIQ", "CELESTIQ"],
+  "ACURA": ["ILX", "MDX", "RDX", "RLX", "TLX", "NSX", "Integra", "ZDX"],
+  "ALFA ROMEO": ["Giulia", "Stelvio", "Tonale", "4C", "4C Spider"],
+  "ASTON MARTIN": ["DB11", "DB12", "DBS", "Vantage", "DBX", "Valkyrie", "Valour", "Vanquish"],
+  "AUDI": ["A3", "A4", "A5", "A6", "A7", "A8", "Q3", "Q4 e-tron", "Q5", "Q7", "Q8", "e-tron", "e-tron GT", "TT", "R8", "RS e-tron GT", "RS3", "RS5", "RS6", "RS7", "S3", "S4", "S5", "S6", "S7", "S8"],
+  "BENTLEY": ["Bentayga", "Continental GT", "Flying Spur", "Mulliner", "Bacalar", "Batur"],
+  "BMW": ["2 Series", "3 Series", "4 Series", "5 Series", "7 Series", "8 Series", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "iX", "iX1", "iX2", "iX3", "i4", "i5", "i7", "Z4", "M2", "M3", "M4", "M5", "M8", "XM"],
+  "BUICK": ["Enclave", "Encore", "Encore GX", "Envision", "Envista", "LaCrosse", "Regal"],
+  "BYD": ["Atto 3", "Han", "Tang", "Seal", "Dolphin", "Shark", "Yuan Plus", "Song Plus"],
+  "CADILLAC": ["CT4", "CT5", "Escalade", "Escalade ESV", "Escalade IQ", "XT4", "XT5", "XT6", "LYRIQ", "OPTIQ", "CELESTIQ"],
   
-  // Enhanced Chevrolet models
   "CHEVROLET": [
-    "Blazer", "Bolt", "Bolt EUV", "Camaro", "Colorado", "Corvette", "Equinox", 
-    "Express", "Malibu", "Silverado 1500", "Silverado 2500HD", "Silverado 3500HD", 
-    "Spark", "Suburban", "Tahoe", "Trailblazer", "Traverse", "Trax", "Silverado EV"
+    "Blazer", "Blazer EV", "Bolt", "Bolt EUV", "Camaro", "Colorado", "Corvette", "Corvette E-Ray", 
+    "Equinox", "Equinox EV", "Express", "Malibu", "Silverado 1500", "Silverado 2500HD", "Silverado 3500HD", 
+    "Silverado EV", "Spark", "Suburban", "Tahoe", "Trailblazer", "Traverse", "Trax", "Montana"
   ],
   
-  "CHRYSLER": ["300", "Pacifica", "Voyager"],
-  "DODGE": ["Challenger", "Charger", "Durango", "Hornet"],
-  "FERRARI": ["296", "SF90", "F8", "Roma", "Portofino", "812", "Purosangue"],
-  "FIAT": ["500", "500X"],
+  "CHRYSLER": [
+    "300", "300C", "300S", "Pacifica", "Pacifica Hybrid", "Pacifica Pinnacle", 
+    "Voyager", "Grand Voyager", "Town & Country", "Aspen", "200", "200C", 
+    "200S", "Sebring", "PT Cruiser", "Airflow Concept"
+  ],
   
-  // Enhanced Ford models
+  "DODGE": [
+    "Challenger", "Charger", "Charger Daytona EV", "Durango", "Hornet", 
+    "Journey", "Grand Caravan", "Viper", "Dart", "Nitro", "Avenger", 
+    "Caliber", "Magnum", "Stealth", "Dakota", "Demon", "RAM"
+  ],
+  
+  "FERRARI": ["296", "296 GTB", "296 GTS", "SF90", "SF90 Stradale", "SF90 Spider", "F8", "F8 Tributo", "F8 Spider", "Roma", "Portofino", "Portofino M", "812", "812 Superfast", "812 GTS", "Purosangue", "Daytona SP3"],
+  
+  "FIAT": [
+    "500", "500X", "500e", "500L", "124 Spider", "500 Abarth", 
+    "500C", "Tipo", "Panda", "Doblo", "Multipla", "Punto"
+  ],
+  
   "FORD": [
-    "Bronco", "Bronco Sport", "EcoSport", "Edge", "Escape", "Expedition", "Explorer", 
-    "F-150", "F-150 Lightning", "F-250", "F-350", "F-450", "Maverick", "Mustang", 
-    "Mustang Mach-E", "Ranger", "Transit", "Transit Connect"
+    "Bronco", "Bronco Sport", "Bronco Raptor", "EcoSport", "Edge", "Escape", "Evos", 
+    "Expedition", "Explorer", "Explorer ST", "F-150", "F-150 Lightning", "F-150 Raptor", 
+    "F-150 Raptor R", "F-250", "F-350", "F-450", "Maverick", "Mustang", "Mustang Dark Horse", 
+    "Mustang GT", "Mustang Mach-E", "Ranger", "Ranger Raptor", "Super Duty", "Transit", 
+    "Transit Connect", "Transit Custom", "Territory", "Puma", "GT", "Focus", "Fiesta"
   ],
   
-  "GENESIS": ["G70", "G80", "G90", "GV60", "GV70", "GV80"],
-  "GMC": ["Acadia", "Canyon", "Hummer EV", "Sierra", "Terrain", "Yukon"],
+  "GENESIS": ["G70", "G80", "G90", "GV60", "GV70", "GV80", "Electrified G80", "Electrified GV70", "Electrified GV80", "X Convertible Concept", "X Speedium Concept"],
   
-  // Enhanced Honda models
+  "GMC": [
+    "Acadia", "Canyon", "Canyon AT4X", "Hummer EV Pickup", "Hummer EV SUV", 
+    "Sierra 1500", "Sierra 2500HD", "Sierra 3500HD", "Sierra EV", "Terrain", 
+    "Terrain AT4", "Yukon", "Yukon XL", "Yukon Denali", "Yukon Denali XL", "Savana"
+  ],
+  
   "HONDA": [
-    "Accord", "Civic", "Civic Type R", "CR-V", "CR-Z", "Element", "Fit", "HR-V", 
-    "Insight", "Odyssey", "Passport", "Pilot", "Ridgeline", "Clarity", "Prologue"
+    "Accord", "Accord Hybrid", "Civic", "Civic Hatchback", "Civic Type R", "CR-V", 
+    "CR-V Hybrid", "CR-Z", "Element", "Fit", "HR-V", "Insight", "Odyssey", "Passport", 
+    "Pilot", "Pilot TrailSport", "Prelude", "Ridgeline", "Clarity", "Prologue", "e:Ny1", "ZR-V"
   ],
   
-  // Enhanced Hyundai models
   "HYUNDAI": [
-    "Accent", "Elantra", "Elantra N", "Ioniq", "Ioniq 5", "Ioniq 6", "Kona", 
-    "Palisade", "Santa Cruz", "Santa Fe", "Sonata", "Tucson", "Venue", "Nexo"
+    "Accent", "Elantra", "Elantra N", "Elantra Hybrid", "Ioniq", "Ioniq 5", "Ioniq 5 N", 
+    "Ioniq 6", "Ioniq 7", "Kona", "Kona Electric", "Kona N", "Palisade", "Santa Cruz", 
+    "Santa Fe", "Santa Fe Hybrid", "Santa Fe PHEV", "Sonata", "Sonata Hybrid", "Tucson", 
+    "Tucson Hybrid", "Tucson PHEV", "Venue", "Nexo", "Azera", "Veloster", "Veloster N", 
+    "Staria", "Casper", "Creta", "Custo", "i10", "i20", "i30", "i40", "ix20", "ix35"
   ],
   
-  "INFINITI": ["Q50", "Q60", "QX50", "QX55", "QX60", "QX80"],
-  "JAGUAR": ["E-PACE", "F-PACE", "F-TYPE", "I-PACE", "XE", "XF"],
-  "JEEP": ["Cherokee", "Compass", "Gladiator", "Grand Cherokee", "Renegade", "Wagoneer", "Wrangler"],
-  "KARMA": ["GS-6", "Revero", "GSe-6"],
+  "INFINITI": ["Q50", "Q60", "QX50", "QX55", "QX60", "QX80", "QX30", "QX70", "Q70"],
   
-  // Enhanced Kia models
+  "JAGUAR": [
+    "E-PACE", "F-PACE", "F-TYPE", "I-PACE", "XE", "XF", "XJ", 
+    "SVR", "XK", "XJL", "XKR", "Project 8", "XJ220"
+  ],
+  
+  "JEEP": [
+    "Cherokee", "Compass", "Gladiator", "Grand Cherokee", "Grand Cherokee 4xe", 
+    "Grand Cherokee L", "Grand Wagoneer", "Renegade", "Wagoneer", "Wrangler", 
+    "Wrangler 4xe", "Wrangler Rubicon 392", "Commander", "Avenger", "Liberty", 
+    "Patriot", "Grand Commander", "Recon", "Meridian"
+  ],
+  
+  "KARMA": ["GS-6", "Revero", "GSe-6", "GS-6E", "EREV", "Revero GT"],
+  
   "KIA": [
-    "Carnival", "EV6", "EV9", "Forte", "K5", "Niro", "Rio", "Seltos", "Sorento", 
-    "Soul", "Sportage", "Stinger", "Telluride", "Carnival", "Cadenza", "Optima"
+    "Carnival", "EV3", "EV5", "EV6", "EV9", "Forte", "K3", "K5", "K8", "K9", 
+    "Niro", "Niro EV", "Niro Hybrid", "Niro PHEV", "Rio", "Seltos", "Sorento", 
+    "Sorento Hybrid", "Sorento PHEV", "Soul", "Soul EV", "Sportage", "Sportage Hybrid", 
+    "Sportage PHEV", "Stinger", "Telluride", "Carnival", "Cadenza", "Optima", 
+    "Picanto", "Ceed", "ProCeed", "Stonic", "Carens", "Ray", "Mohave", "Sonet"
   ],
   
-  "LAMBORGHINI": ["Aventador", "Huracan", "Urus", "Revuelto"],
-  "LAND ROVER": ["Defender", "Discovery", "Range Rover", "Range Rover Evoque", "Range Rover Sport", "Range Rover Velar"],
-  "LEXUS": ["ES", "GX", "IS", "LC", "LS", "LX", "NX", "RX", "UX", "RZ"],
-  "LINCOLN": ["Aviator", "Corsair", "Nautilus", "Navigator"],
-  "LOTUS": ["Emira", "Evija", "Eletre"],
-  "MASERATI": ["Ghibli", "Grecale", "Levante", "MC20", "Quattroporte"],
-  "MAZDA": ["CX-30", "CX-5", "CX-9", "CX-50", "CX-90", "Mazda3", "Mazda6", "MX-5 Miata"],
-  "MCLAREN": ["Artura", "720S", "765LT", "GT"],
-  "MERCEDES BENZ": ["A-Class", "C-Class", "E-Class", "S-Class", "CLA", "CLS", "GLA", "GLB", "GLC", "GLE", "GLS", "EQE", "EQS", "G-Class", "AMG GT"],
-  "MINI": ["Cooper", "Clubman", "Countryman", "Convertible", "Electric"],
-  "MITSUBISHI": ["Eclipse Cross", "Mirage", "Outlander", "Outlander Sport"],
+  "LAMBORGHINI": ["Aventador", "Huracan", "Huracan Sterrato", "Urus", "Urus S", "Urus Performante", "Revuelto", "Countach LPI 800-4", "Sian", "Huracán Tecnica"],
   
-  // Enhanced Nissan models
+  "LAND ROVER": [
+    "Defender", "Defender 90", "Defender 110", "Defender 130", "Discovery", 
+    "Discovery Sport", "Range Rover", "Range Rover Evoque", "Range Rover Sport", 
+    "Range Rover Velar", "Range Rover SV", "Range Rover Electric", "Range Rover Sport SV", 
+    "Freelander", "LR2", "LR3", "LR4"
+  ],
+  
+  "LEXUS": [
+    "ES", "ES 250", "ES 300h", "ES 350", "GX", "GX 550", "IS", "IS 300", "IS 350", 
+    "IS 500", "LC", "LC 500", "LC 500h", "LS", "LS 500", "LS 500h", "LX", "LX 600", 
+    "NX", "NX 250", "NX 350", "NX 350h", "NX 450h+", "RX", "RX 350", "RX 350h", 
+    "RX 450h+", "RX 500h", "UX", "UX 200", "UX 250h", "RZ", "RZ 450e", 
+    "TX", "TX 350", "TX 500h", "TX 550h+", "LFA", "RC", "RC F", "GS", "CT", "HS", "SC"
+  ],
+  
+  "LINCOLN": [
+    "Aviator", "Aviator Grand Touring", "Corsair", "Corsair Grand Touring", 
+    "Nautilus", "Navigator", "Navigator L", "Star Concept", "MKZ", "Continental", 
+    "MKX", "MKC", "MKT", "Town Car", "Zephyr"
+  ],
+  
+  "LOTUS": ["Emira", "Evija", "Eletre", "Emeya", "Exige", "Elise", "Evora", "Type 135"],
+  
+  "LUCID": ["Air", "Air Pure", "Air Touring", "Air Grand Touring", "Air Sapphire", "Gravity"],
+  
+  "MASERATI": [
+    "Ghibli", "Grecale", "Grecale Folgore", "GranTurismo", "GranTurismo Folgore", 
+    "GranCabrio", "GranCabrio Folgore", "Levante", "MC20", "MC20 Cielo", "Quattroporte", 
+    "Alfieri", "GranSport", "Barchetta", "Coupe", "Spyder"
+  ],
+  
+  "MAZDA": [
+    "CX-30", "CX-5", "CX-50", "CX-70", "CX-80", "CX-90", "Mazda3", "Mazda3 Hatchback", 
+    "Mazda6", "MX-5 Miata", "MX-30", "MX-5 RF", "CX-3", "CX-60", "CX-7", "CX-9", 
+    "RX-7", "RX-8", "MX-6", "Tribute", "Protege", "MPV", "Premacy", "BT-50"
+  ],
+  
+  "MCLAREN": ["Artura", "720S", "765LT", "765LT Spider", "750S", "750S Spider", "GT", "Elva", "Senna", "Speedtail", "P1", "600LT", "620R", "570S", "540C", "12C", "MP4-12C"],
+  
+  "MERCEDES BENZ": [
+    "A-Class", "AMG GT", "AMG GT 4-Door", "AMG GT Coupe", "AMG One", "AMG SL", 
+    "B-Class", "C-Class", "C-Class Sedan", "C-Class Coupe", "C-Class Cabriolet", 
+    "CLA", "CLE", "CLS", "E-Class", "E-Class Sedan", "E-Class Coupe", "E-Class Cabriolet", 
+    "EQA", "EQB", "EQC", "EQE", "EQE SUV", "EQS", "EQS SUV", "EQV", "G-Class", "G-Class Electric", 
+    "GLA", "GLB", "GLC", "GLC Coupe", "GLE", "GLE Coupe", "GLS", "Maybach EQS SUV", "Maybach GLS", 
+    "Maybach S-Class", "S-Class", "SL", "SLC", "V-Class", "Vito", "X-Class"
+  ],
+  
+  "MINI": [
+    "Cooper", "Cooper S", "Cooper SE", "Clubman", "Countryman", "Countryman SE", 
+    "Convertible", "Electric", "John Cooper Works", "JCW", "Hardtop 2 Door", 
+    "Hardtop 4 Door", "Cooper 3-Door", "Cooper 5-Door", "Aceman", "Paceman", "Coupe", "Roadster"
+  ],
+  
+  "MITSUBISHI": [
+    "Eclipse Cross", "Mirage", "Mirage G4", "Outlander", "Outlander PHEV", 
+    "Outlander Sport", "ASX", "Pajero", "Pajero Sport", "Triton", "Lancer", 
+    "Lancer Evolution", "Galant", "i-MiEV", "Xpander", "L200", "Montero", "RVR"
+  ],
+  
   "NISSAN": [
-    "Altima", "Ariya", "Armada", "Frontier", "GT-R", "Kicks", "Leaf", "Maxima", 
-    "Murano", "Pathfinder", "Rogue", "Sentra", "Titan", "Versa", "Z", "370Z", "400Z"
+    "Altima", "Ariya", "Armada", "Frontier", "GT-R", "Juke", "Kicks", "Leaf", 
+    "Maxima", "Murano", "Pathfinder", "Qashqai", "Rogue", "Sentra", "Titan", 
+    "Titan XD", "Versa", "Z", "370Z", "400Z", "X-Trail", "Terra", "Note", 
+    "Patrol", "Serena", "Skyline", "Sylphy", "Magnite", "March", "Micra", "NV"
   ],
   
-  "PORSCHE": ["911", "718 Boxster", "718 Cayman", "Cayenne", "Macan", "Panamera", "Taycan"],
-  "RAM": ["1500", "2500", "3500", "ProMaster"],
-  "ROLLS ROYCE": ["Cullinan", "Dawn", "Ghost", "Phantom", "Spectre", "Wraith"],
-  "SMART": ["EQ fortwo"],
-  "SUBARU": ["Ascent", "BRZ", "Crosstrek", "Forester", "Impreza", "Legacy", "Outback", "Solterra", "WRX"],
-  "TESLA": ["Model 3", "Model S", "Model X", "Model Y", "Cybertruck"],
+  "POLESTAR": ["Polestar 2", "Polestar 3", "Polestar 4", "Polestar 5", "Polestar 6", "Polestar Precept", "Polestar O₂"],
   
-  // Enhanced Toyota models
+  "PORSCHE": [
+    "911", "911 Carrera", "911 GT3", "911 GT3 RS", "911 Turbo", "911 Turbo S", 
+    "718 Boxster", "718 Cayman", "Cayenne", "Cayenne Coupe", "Cayenne Turbo GT", 
+    "Macan", "Macan Electric", "Panamera", "Taycan", "Taycan Cross Turismo", 
+    "Taycan Sport Turismo", "918 Spyder", "Carrera GT", "Mission E", "Mission X"
+  ],
+  
+  "RAM": [
+    "1500", "1500 Classic", "1500 REV", "1500 TRX", "2500", "3500", "ProMaster", 
+    "ProMaster City", "Dakota", "Ramcharger", "Heavy Duty", "Chassis Cab", 
+    "Tradesman", "Rebel", "Limited", "Laramie", "Longhorn"
+  ],
+  
+  "RIVIAN": ["R1T", "R1S", "R2", "R3", "R3X", "R4", "R5", "Commercial Van", "EDV", "EDV 700"],
+  
+  "ROLLS ROYCE": ["Cullinan", "Dawn", "Ghost", "Phantom", "Spectre", "Wraith", "Boat Tail", "Black Badge", "Silver Shadow", "Silver Wraith", "Corniche", "Camargue"],
+  
+  "SUBARU": [
+    "Ascent", "BRZ", "Crosstrek", "Crosstrek Hybrid", "Forester", "Impreza", 
+    "Legacy", "Outback", "Outback Wilderness", "Solterra", "WRX", "WRX STI", 
+    "Baja", "Tribeca", "XV", "Levorg", "Exiga", "Sambar", "Alcyone", "SVX"
+  ],
+  
+  "TESLA": [
+    "Model 3", "Model 3 Highland", "Model S", "Model S Plaid", "Model X", 
+    "Model X Plaid", "Model Y", "Cybertruck", "Roadster", "Semi", "Optimus Bot"
+  ],
+  
   "TOYOTA": [
-    "4Runner", "86", "Avalon", "bZ4X", "Camry", "Corolla", "Corolla Cross", "Crown", 
-    "GR86", "GR Corolla", "GR Supra", "Highlander", "Land Cruiser", "Mirai", "Prius", 
-    "Prius Prime", "RAV4", "RAV4 Prime", "Sequoia", "Sienna", "Supra", "Tacoma", 
-    "Tundra", "Venza", "Yaris"
+    "4Runner", "86", "Avalon", "bZ3", "bZ3X", "bZ4X", "bZ5X", "Camry", "Camry Hybrid", 
+    "Corolla", "Corolla Cross", "Corolla Cross Hybrid", "Corolla Hybrid", "Crown", 
+    "Crown Signia", "GR86", "GR Corolla", "GR Supra", "Grand Highlander", "Highlander", 
+    "Highlander Hybrid", "Land Cruiser", "Mirai", "Prius", "Prius Prime", "RAV4", 
+    "RAV4 Hybrid", "RAV4 Prime", "Sequoia", "Sienna", "Supra", "Tacoma", "Tundra", 
+    "Tundra Hybrid", "Venza", "Yaris", "C-HR", "Aygo", "Century", "Hilux", "Proace", 
+    "Urban Cruiser", "Fortuner", "Innova", "Raize", "Alphard", "Celica", "MR2"
+  ],
+  
+  "VOLKSWAGEN": [
+    "Arteon", "Atlas", "Atlas Cross Sport", "Golf", "Golf GTI", "Golf R", "ID.3", 
+    "ID.4", "ID.5", "ID.6", "ID.7", "ID. Buzz", "Jetta", "Jetta GLI", "Passat", 
+    "Taos", "Tiguan", "Touareg", "Amarok", "California", "Caddy", "Crafter", 
+    "Multivan", "Polo", "Scirocco", "Sharan", "T-Cross", "T-Roc", "Transporter", "Up"
+  ],
+  
+  "VOLVO": [
+    "C40 Recharge", "EX30", "EX90", "S60", "S60 Recharge", "S90", "S90 Recharge", 
+    "V60", "V60 Cross Country", "V60 Recharge", "V90", "V90 Cross Country", 
+    "XC40", "XC40 Recharge", "XC60", "XC60 Recharge", "XC90", "XC90 Recharge", 
+    "Polestar 1", "S40", "V40", "C30", "C70", "XC70"
   ]
 };
 
-// Extended trims by model with more comprehensive options and a "Trim not listed" option added
 const TRIMS_BY_MODEL: Record<string, string[]> = {
   "MDX": ["Base", "Technology", "A-Spec", "Advance", "Type S", "Type S Advance"],
   "RDX": ["Base", "Technology", "A-Spec", "Advance", "PMC Edition"],
@@ -139,7 +258,6 @@ const TRIMS_BY_MODEL: Record<string, string[]> = {
   "i4": ["eDrive35", "eDrive40", "xDrive40", "M50"],
   "iX": ["xDrive40", "xDrive50", "M60"],
   
-  // Enhanced Chevrolet trims
   "Silverado 1500": ["WT", "Custom", "Custom Trail Boss", "LT", "RST", "LT Trail Boss", "LTZ", "High Country", "ZR2", "ZR2 Bison", "Trim not listed"],
   "Silverado 2500HD": ["WT", "Custom", "LT", "LTZ", "High Country", "ZR2", "Trim not listed"],
   "Silverado 3500HD": ["WT", "LT", "LTZ", "High Country", "Trim not listed"],
@@ -157,7 +275,6 @@ const TRIMS_BY_MODEL: Record<string, string[]> = {
   "Bolt": ["1LT", "2LT", "Trim not listed"],
   "Bolt EUV": ["LT", "Premier", "Redline Edition", "Trim not listed"],
   
-  // Enhanced Ford trims
   "F-150": ["XL", "XLT", "Lariat", "King Ranch", "Platinum", "Limited", "Tremor", "Raptor", "Raptor R", "Lightning Pro", "Lightning XLT", "Lightning Lariat", "Lightning Platinum", "Trim not listed"],
   "F-250": ["XL", "XLT", "Lariat", "King Ranch", "Platinum", "Limited", "Tremor", "Trim not listed"],
   "F-350": ["XL", "XLT", "Lariat", "King Ranch", "Platinum", "Limited", "Tremor", "Trim not listed"],
@@ -171,7 +288,6 @@ const TRIMS_BY_MODEL: Record<string, string[]> = {
   "Mustang Mach-E": ["Select", "Premium", "California Route 1", "GT", "GT Performance", "Trim not listed"],
   "Ranger": ["XL", "XLT", "Lariat", "Tremor", "Raptor", "Splash", "Trim not listed"],
   
-  // Enhanced Honda trims
   "Accord": ["LX", "Sport", "Sport SE", "EX-L", "Sport 2.0T", "Touring", "Hybrid Sport", "Hybrid EX-L", "Hybrid Touring", "Trim not listed"],
   "Civic": ["LX", "Sport", "EX", "EX-L", "Touring", "Si", "Type R", "Type R Limited Edition", "Type R Touring", "Trim not listed"],
   "Civic Type R": ["Base", "Limited Edition", "Touring", "Trim not listed"],
@@ -184,7 +300,6 @@ const TRIMS_BY_MODEL: Record<string, string[]> = {
   "Fit": ["LX", "Sport", "EX", "EX-L", "Trim not listed"],
   "Insight": ["LX", "EX", "Touring", "Trim not listed"],
   
-  // Enhanced Hyundai trims
   "Elantra": ["SE", "SEL", "N Line", "Limited", "N", "Hybrid Blue", "Hybrid Limited", "Trim not listed"],
   "Elantra N": ["Base", "DCT", "Manual", "Trim not listed"],
   "Sonata": ["SE", "SEL", "SEL Plus", "N Line", "Limited", "Hybrid Blue", "Hybrid SEL", "Hybrid Limited", "Trim not listed"],
@@ -198,7 +313,6 @@ const TRIMS_BY_MODEL: Record<string, string[]> = {
   "Venue": ["SE", "SEL", "Limited", "Denim", "Trim not listed"],
   "Accent": ["SE", "SEL", "Limited", "Trim not listed"],
   
-  // Enhanced Kia trims
   "Telluride": ["LX", "S", "EX", "SX", "X-Line", "X-Pro", "SX Prestige", "Trim not listed"],
   "Sorento": ["LX", "S", "EX", "SX", "SX Prestige", "X-Line", "Hybrid EX", "Hybrid SX Prestige", "PHEV SX", "PHEV SX Prestige", "Trim not listed"],
   "Sportage": ["LX", "EX", "SX", "SX Prestige", "X-Line", "X-Pro", "Hybrid LX", "Hybrid EX", "Hybrid SX Prestige", "PHEV X-Line", "PHEV X-Line Prestige", "Trim not listed"],
@@ -213,7 +327,6 @@ const TRIMS_BY_MODEL: Record<string, string[]> = {
   "Niro": ["LX", "EX", "SX", "Hybrid", "PHEV", "EV", "Trim not listed"],
   "Rio": ["LX", "S", "GT-Line", "Trim not listed"],
   
-  // Enhanced Nissan trims
   "Altima": ["S", "SV", "SR", "SL", "SR VC-Turbo", "Platinum", "Edition ONE", "SR Midnight Edition", "Trim not listed"],
   "Rogue": ["S", "SV", "SL", "Platinum", "Hybrid SV", "Hybrid SL", "Hybrid Platinum", "Midnight Edition", "Trim not listed"],
   "Pathfinder": ["S", "SV", "SL", "Platinum", "Rock Creek", "Rock Creek SV", "Rock Creek SL", "Trim not listed"],
@@ -230,7 +343,6 @@ const TRIMS_BY_MODEL: Record<string, string[]> = {
   "GT-R": ["Premium", "T-Spec", "NISMO", "NISMO Special Edition", "Trim not listed"],
   "Ariya": ["Engage", "Engage+", "Evolve+", "Empower+", "Platinum+", "Trim not listed"],
   
-  // Enhanced Toyota trims
   "Camry": ["LE", "SE", "SE Nightshade", "XLE", "XSE", "TRD", "Hybrid LE", "Hybrid SE", "Hybrid SE Nightshade", "Hybrid XLE", "Hybrid XSE", "Trim not listed"],
   "RAV4": ["LE", "XLE", "XLE Premium", "Adventure", "TRD Off-Road", "Limited", "Hybrid LE", "Hybrid XLE", "Hybrid XLE Premium", "Hybrid XSE", "Hybrid Limited", "Prime SE", "Prime XSE", "Prime XSE Premium", "Trim not listed"],
   "Tacoma": ["SR", "SR5", "TRD Sport", "TRD Off-Road", "Limited", "TRD Pro", "Trail Edition", "PreRunner", "SR5 V6", "TRD Sport V6", "TRD Off-Road V6", "Limited V6", "TrailHunter", "Trim not listed"],
@@ -285,7 +397,6 @@ const VehicleForm = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [customTrim, setCustomTrim] = useState<Record<string, string>>({});
 
-  // Validation function
   const validateVehicles = () => {
     const newErrors: Record<string, string> = {};
     let isValid = true;
@@ -309,24 +420,20 @@ const VehicleForm = () => {
     return isValid;
   };
 
-  // Handle next step button
   const handleNext = () => {
     if (validateVehicles()) {
       nextStep();
     }
   };
 
-  // Get available models based on selected make
   const getModelsForMake = (make: string) => {
     return make ? MODELS_BY_MAKE[make] || [] : [];
   };
 
-  // Get available trims based on selected model
   const getTrimsForModel = (model: string) => {
     return model ? TRIMS_BY_MODEL[model] || [] : [];
   };
 
-  // Handle custom trim input
   const handleCustomTrimChange = (vehicleId: string, value: string) => {
     setCustomTrim(prev => ({...prev, [vehicleId]: value}));
     updateVehicle(vehicleId, { trim: value });
@@ -361,7 +468,6 @@ const VehicleForm = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Year Selection */}
               <div className="form-group">
                 <Label htmlFor={`${vehicle.id}-year`} className="mb-1 block">
                   Year <span className="text-red-500">*</span>
@@ -386,7 +492,6 @@ const VehicleForm = () => {
                 )}
               </div>
 
-              {/* Make Selection */}
               <div className="form-group">
                 <Label htmlFor={`${vehicle.id}-make`} className="mb-1 block">
                   Make <span className="text-red-500">*</span>
@@ -413,7 +518,6 @@ const VehicleForm = () => {
                 )}
               </div>
 
-              {/* Model Selection */}
               <div className="form-group">
                 <Label htmlFor={`${vehicle.id}-model`} className="mb-1 block">
                   Model <span className="text-red-500">*</span>
@@ -442,7 +546,6 @@ const VehicleForm = () => {
                 )}
               </div>
 
-              {/* Trim Selection */}
               <div className="form-group">
                 <Label htmlFor={`${vehicle.id}-trim`} className="mb-1 block">
                   Trim (Optional)
@@ -451,7 +554,6 @@ const VehicleForm = () => {
                   value={vehicle.trim || ""}
                   onValueChange={(value) => {
                     if (value === "Trim not listed") {
-                      // Clear the trim field to use custom input
                       updateVehicle(vehicle.id, { trim: "" });
                       setCustomTrim(prev => ({ ...prev, [vehicle.id]: "" }));
                     } else {
@@ -473,7 +575,6 @@ const VehicleForm = () => {
                   </SelectContent>
                 </Select>
                 
-                {/* Custom trim input field that appears when "Trim not listed" is selected */}
                 {vehicle.trim === "Trim not listed" && (
                   <div className="mt-2">
                     <Input
@@ -486,7 +587,6 @@ const VehicleForm = () => {
                 )}
               </div>
 
-              {/* Vehicle Usage */}
               <div className="form-group md:col-span-2">
                 <Label htmlFor={`${vehicle.id}-usage`} className="mb-1 block">
                   Vehicle Usage <span className="text-red-500">*</span>

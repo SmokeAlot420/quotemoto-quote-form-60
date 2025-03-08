@@ -1,5 +1,6 @@
-﻿import React from "react";
-import ReactDOM from "react-dom";
+
+import React from "react";
+import { createRoot } from "react-dom/client";
 
 function QuoteMotoWidget() {
     return (
@@ -28,6 +29,9 @@ function QuoteMotoWidget() {
 window.onload = function () {
     const container = document.getElementById("quotemoto-widget");
     if (container) {
-        ReactDOM.render(<QuoteMotoWidget />, container);
+        const root = createRoot(container);
+        root.render(<QuoteMotoWidget />);
     }
 };
+
+export default QuoteMotoWidget;
