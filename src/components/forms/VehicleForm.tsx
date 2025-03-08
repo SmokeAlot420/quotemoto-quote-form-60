@@ -506,7 +506,10 @@ const VehicleForm = () => {
                     </SelectContent>
                   </Select>
                   <div className="ml-2">
-                    <HelpCircle className="h-5 w-5 text-insurance-text-light cursor-help" title="How you primarily use this vehicle will affect your quote." />
+                    <HelpCircle 
+                      className="h-5 w-5 text-insurance-text-light cursor-help" 
+                      aria-label="How you primarily use this vehicle will affect your quote." 
+                    />
                   </div>
                 </div>
               </div>
