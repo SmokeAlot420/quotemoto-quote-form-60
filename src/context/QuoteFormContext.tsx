@@ -1,6 +1,5 @@
-
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { toast } from "@/components/ui/toast";
+import { toast } from "@/hooks/use-toast";
 
 // Types for our form data
 export type VehicleUsage = "Personal" | "Business" | "Rideshare";
