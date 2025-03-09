@@ -1,3 +1,4 @@
+
 import "./components/QuoteMotoWidget";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,7 +15,7 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         {/* Toaster appears on all pages */}
-        <Toaster position="top-center" />
+        <Toaster />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/thank-you" element={<ThankYou />} />

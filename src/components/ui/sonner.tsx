@@ -1,8 +1,10 @@
+
 "use client"
 import { Toaster as Sonner } from "sonner"
+import { type ToasterProps } from "sonner"
 
-// Remove next-themes dependency for now
-export function Toaster() {
+// Export the Toaster component with proper typing
+export function Toaster(props: ToasterProps) {
   return (
     <Sonner
       position="top-center"
@@ -14,6 +16,7 @@ export function Toaster() {
           cancelButton: "bg-muted text-muted-foreground",
         }
       }}
+      {...props}
     />
   )
 }
