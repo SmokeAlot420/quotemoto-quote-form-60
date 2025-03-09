@@ -1,17 +1,22 @@
-// This is like your app's GPS settings
 import { defineConfig } from 'vite'
+import path from 'path'
 
 export default defineConfig({
-  base: '/quotemoto-quote-form-60/', // 👈🏼 MUST BE YOUR REPO NAME
-  build: {
-    outDir: 'dist', // Output folder
-    emptyOutDir: true, // Clean old files
-    rollupOptions: {
-      output: {
-        entryFileNames: 'assets/[name].js', // JS file storage
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name].[ext]' // Images/fonts
-      }
+    base: '/quotemoto-quote-form-60/',
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './src'),
+        }
+    },
+    build: {
+        outDir: 'dist',
+        emptyOutDir: true,
+        rollupOptions: {
+            output: {
+                entryFileNames: 'assets/[name].js',
+                chunkFileNames: 'assets/[name].js',
+                assetFileNames: 'assets/[name].[ext]'
+            }
+        }
     }
-  }
 })
