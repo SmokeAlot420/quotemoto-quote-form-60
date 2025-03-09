@@ -28,13 +28,17 @@ function QuoteMotoWidget() {
 
 // Only run this code if we're in a browser environment
 if (typeof window !== 'undefined') {
-    window.onload = function () {
+    window.addEventListener('DOMContentLoaded', function () {
         const container = document.getElementById("quotemoto-widget");
         if (container) {
             const root = createRoot(container);
-            root.render(<React.StrictMode><QuoteMotoWidget /></React.StrictMode>);
+            root.render(
+                <React.StrictMode>
+                    <QuoteMotoWidget />
+                </React.StrictMode>
+            );
         }
-    };
+    });
 }
 
 export default QuoteMotoWidget;

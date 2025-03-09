@@ -1,8 +1,10 @@
 
 import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
+    plugins: [react()],
     base: '/quotemoto-quote-form-60/',
     resolve: {
         alias: {

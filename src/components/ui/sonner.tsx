@@ -1,7 +1,8 @@
 
 "use client"
-import { Toaster as Sonner } from "sonner"
-import { type ToasterProps } from "sonner"
+import React from "react";
+import { Toaster as Sonner } from "sonner";
+import { type ToasterProps } from "sonner";
 
 // Export the Toaster component with proper typing
 export function Toaster(props: ToasterProps) {
@@ -18,5 +19,5 @@ export function Toaster(props: ToasterProps) {
       }}
       {...props}
     />
-  )
+  );
 }
